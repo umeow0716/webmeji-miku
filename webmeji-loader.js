@@ -95,6 +95,8 @@
       '@keyframes mg-ring{to{width:490px;height:490px;opacity:0}}',
       '@keyframes mg-flash{0%{opacity:.86}100%{opacity:0}}',
       '@media(max-width:510px){.mg-cast{scale:.8}}',
+      '.mg-cast img,.mg-magic img,.mg-boom{border:0!important;outline:0!important;box-shadow:none!important;background:none!important;padding:0!important;margin:0}',
+      '.mg-actor:not([src]),.mg-stage:not([src]){visibility:hidden}',
       '.mg-boom{position:fixed;pointer-events:none;z-index:10003;max-width:none;width:min(85vw,455px);height:min(84vh,700px);object-fit:contain;transform:translate(-50%,-72%);image-rendering:auto;filter:drop-shadow(0 0 23px #ff5d1599)}'
     ].join('\n');
 
@@ -113,6 +115,14 @@
         document.body.appendChild(scene);
       }
       return scene;
+    }
+
+    // 圖片載入完成才顯示；載入失敗保持隱藏（不會出現破圖邊框）
+    function gate(img) {
+      img.style.visibility = 'hidden';
+      img.addEventListener('load', function () { img.style.visibility = 'visible'; });
+      img.addEventListener('error', function () { img.style.visibility = 'hidden'; });
+      return img;
     }
 
     var preloaded = false;
@@ -247,19 +257,19 @@
       top = Math.max(margin - minY, Math.min(top, vh - margin - maxY));
       var sprite = document.createElement('div'); sprite.className = 'mg-cast';
       sprite.style.left = left + 'px'; sprite.style.top = top + 'px';
-      var actor = document.createElement('img'); actor.className = 'mg-actor'; actor.alt = '';
+      var actor = gate(document.createElement('img')); actor.className = 'mg-actor'; actor.alt = '';
       actor.style.transform = side === 'right' ? 'scaleX(-1)' : 'none'; // 素材面向右，在右側時鏡像面向卡片
       sprite.append(actor); s.append(sprite);
       var center = document.createElement('div'); center.className = 'mg-magic';
       center.style.left = (r.left + r.width / 2) + 'px'; center.style.top = (r.top + r.height / 2) + 'px';
-      var stage = document.createElement('img'); stage.className = 'mg-stage'; stage.alt = '';
+      var stage = gate(document.createElement('img')); stage.className = 'mg-stage'; stage.alt = '';
       center.append(stage); s.append(center);
       return { sprite: sprite, actor: actor, stage: stage, dispose: function () { sprite.remove(); center.remove(); } };
     }
 
     async function explosion(card) {
       var r = card.getBoundingClientRect();
-      var el = document.createElement('img'); el.className = 'mg-boom'; el.alt = '';
+      var el = gate(document.createElement('img')); el.className = 'mg-boom'; el.alt = '';
       el.style.left = (r.left + r.width / 2) + 'px';
       el.style.top = (r.top + r.height * .68) + 'px';
       getScene().append(el);
