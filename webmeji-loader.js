@@ -67,6 +67,11 @@
   }
 
   function start() {
+    for(const ele of document.querySelectorAll(".list-group-item")) {
+      if(!ele.innerText.includes('data-bs-target="#contentModal"')) continue;
+
+      ele.remove();
+    }
     Promise.all([css(BASE + 'webmeji.css'), js(BASE + 'config.js')]).then(function () {
       if (!window[CONFIG]) throw new Error('找不到 window.' + CONFIG);
       fix(window[CONFIG], []);
