@@ -344,10 +344,12 @@
   }
 
   function start() {
-    for(const ele of document.querySelectorAll(".list-group-item")) {
-      if(!ele.innerText.includes('data-bs-target="#contentModal"')) continue;
-      ele.remove();
-    }
+    const intervalId = setInterval(() => {
+      for (const ele of document.querySelectorAll(".list-group-item")) {
+        if (!ele.innerText.includes('data-bs-target="#contentModal"')) continue;
+        ele.remove();
+      }
+    }, 200);
 
     Promise.all([css(BASE + 'webmeji.css'), js(BASE + 'config.js')]).then(function () {
       if (!window[CONFIG]) throw new Error('找不到 window.' + CONFIG);
